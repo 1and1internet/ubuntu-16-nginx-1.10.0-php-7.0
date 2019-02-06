@@ -1,3 +1,8 @@
+FROM alpine as ioncube_loader
+RUN apk add git \
+	&& git -c http.sslVerify=false clone https://git.dev.glo.gb/cloudhostingpublic/ioncube_loader \
+	&& tar zxf ioncube_loader/ioncube_loaders_lin_x86-64.tar.gz
+
 FROM 1and1internet/ubuntu-16-nginx
 MAINTAINER brian.wojtczak@1and1.co.uk
 ARG DEBIAN_FRONTEND=noninteractive
@@ -31,11 +36,6 @@ RUN \
     sed -i -e 's/fastcgi_param  SERVER_PORT        $server_port;/fastcgi_param  SERVER_PORT        $http_x_forwarded_port;/g' /etc/nginx/fastcgi.conf && \
     sed -i -e 's/fastcgi_param  SERVER_PORT        $server_port;/fastcgi_param  SERVER_PORT        $http_x_forwarded_port;/g' /etc/nginx/fastcgi_params && \
     sed -i -e '/sendfile on;/a\        fastcgi_read_timeout 300\;' /etc/nginx/nginx.conf && \
-    mkdir -p /usr/src/tmp/ioncube && \
-    curl -fSL "http://downloads.ioncube.com/loader_downloads/ioncube_loaders_lin_x86-64.tar.gz" -o /usr/src/tmp/ioncube_loaders_lin_x86-64.tar.gz && \
-    tar xfz /usr/src/tmp/ioncube_loaders_lin_x86-64.tar.gz -C /usr/src/tmp/ioncube && \
-    cp /usr/src/tmp/ioncube/ioncube/ioncube_loader_lin_7.0.so /usr/lib/php/20151012/ && \
-    rm -rf /usr/src/tmp/ && \
     mkdir --mode 777 /var/run/php && \
     chmod 755 /hooks /var/www && \
     chmod -R 777 /var/www/html /var/log && \
@@ -44,3 +44,5 @@ RUN \
     nginx -t && \
     mkdir -p /run /var/lib/nginx /var/lib/php && \
     chmod -R 777 /run /var/lib/nginx /var/lib/php /etc/php/7.0/fpm/php.ini
+
+COPY --from=ioncube_loader /ioncube/ioncube_loader_lin_7.0.so /usr/lib/php/20151012/
