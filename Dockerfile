@@ -6,6 +6,7 @@ RUN apk add git \
 FROM 1and1internet/ubuntu-16-nginx
 MAINTAINER brian.wojtczak@1and1.co.uk
 ARG DEBIAN_FRONTEND=noninteractive
+ARG PHP_VERSION=7.0
 COPY files /
 RUN \
     apt-get update && \
@@ -13,7 +14,7 @@ RUN \
     add-apt-repository -y -u ppa:ondrej/php && \
     apt-get update && \
     apt-get install -y imagemagick graphicsmagick && \
-    apt-get install -y php7.0-bcmath php7.0-bz2 php7.0-cli php7.0-common php7.0-curl php7.0-dba  php7.0-fpm php7.0-gd php7.0-gmp php7.0-imap php7.0-intl php7.0-ldap php7.0-mbstring php7.0-mcrypt php7.0-mysql php7.0-odbc php7.0-pgsql php7.0-recode php7.0-snmp php7.0-soap php7.0-sqlite php7.0-tidy php7.0-xml php7.0-xmlrpc php7.0-xsl php7.0-zip && \
+    apt-get install -y php${PHP_VERSION}-bcmath php${PHP_VERSION}-bz2 php${PHP_VERSION}-cli php${PHP_VERSION}-common php${PHP_VERSION}-curl php${PHP_VERSION}-dba  php${PHP_VERSION}-fpm php${PHP_VERSION}-gd php${PHP_VERSION}-gmp php${PHP_VERSION}-imap php${PHP_VERSION}-intl php${PHP_VERSION}-ldap php${PHP_VERSION}-mbstring php${PHP_VERSION}-mcrypt php${PHP_VERSION}-mysql php${PHP_VERSION}-odbc php${PHP_VERSION}-pgsql php${PHP_VERSION}-recode php${PHP_VERSION}-snmp php${PHP_VERSION}-soap php${PHP_VERSION}-sqlite php${PHP_VERSION}-tidy php${PHP_VERSION}-xml php${PHP_VERSION}-xmlrpc php${PHP_VERSION}-xsl php${PHP_VERSION}-zip && \
     apt-get install -y php-gnupg php-imagick php-mongodb php-streams php-fxsl && \
     mkdir /tmp/composer/ && \
     cd /tmp/composer && \
@@ -25,17 +26,19 @@ RUN \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /etc/nginx/sites-enabled/default /etc/nginx/sites-available/* && \
-    sed -i -e 's/^user = www-data$/;user = www-data/g' /etc/php/7.0/fpm/pool.d/www.conf && \
-    sed -i -e 's/^group = www-data$/;group = www-data/g' /etc/php/7.0/fpm/pool.d/www.conf && \
-    sed -i -e 's/^listen.owner = www-data$/;listen.owner = www-data/g' /etc/php/7.0/fpm/pool.d/www.conf && \
-    sed -i -e 's/^listen.group = www-data$/;listen.group = www-data/g' /etc/php/7.0/fpm/pool.d/www.conf && \
-    sed -i -e 's/max_execution_time = 30/max_execution_time = 300/g' /etc/php/7.0/fpm/php.ini && \
-    sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 256M/g' /etc/php/7.0/fpm/php.ini && \
-    sed -i -e 's/post_max_size = 8M/post_max_size = 512M/g' /etc/php/7.0/fpm/php.ini && \
-    sed -i -e 's/memory_limit = 128M/memory_limit = 512M/g' /etc/php/7.0/fpm/php.ini && \
+    sed -i -e 's/^user = www-data$/;user = www-data/g' /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
+    sed -i -e 's/^group = www-data$/;group = www-data/g' /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
+    sed -i -e 's/^listen.owner = www-data$/;listen.owner = www-data/g' /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
+    sed -i -e 's/^listen.group = www-data$/;listen.group = www-data/g' /etc/php/${PHP_VERSION}/fpm/pool.d/www.conf && \
+    sed -i -e 's/max_execution_time = 30/max_execution_time = 300/g' /etc/php/${PHP_VERSION}/fpm/php.ini && \
+    sed -i -e 's/upload_max_filesize = 2M/upload_max_filesize = 256M/g' /etc/php/${PHP_VERSION}/fpm/php.ini && \
+    sed -i -e 's/post_max_size = 8M/post_max_size = 512M/g' /etc/php/${PHP_VERSION}/fpm/php.ini && \
+    sed -i -e 's/memory_limit = 128M/memory_limit = 512M/g' /etc/php/${PHP_VERSION}/fpm/php.ini && \
     sed -i -e 's/fastcgi_param  SERVER_PORT        $server_port;/fastcgi_param  SERVER_PORT        $http_x_forwarded_port;/g' /etc/nginx/fastcgi.conf && \
     sed -i -e 's/fastcgi_param  SERVER_PORT        $server_port;/fastcgi_param  SERVER_PORT        $http_x_forwarded_port;/g' /etc/nginx/fastcgi_params && \
     sed -i -e '/sendfile on;/a\        fastcgi_read_timeout 300\;' /etc/nginx/nginx.conf && \
+	sed -i -e 's/^session.gc_probability = 0/session.gc_probability = 1/' \
+		   -e 's/^session.gc_divisor = 1000/session.gc_divisor = 100/' /etc/php/${PHP_VERSION}/*/php.ini && \
     mkdir --mode 777 /var/run/php && \
     chmod 755 /hooks /var/www && \
     chmod -R 777 /var/www/html /var/log && \
@@ -43,6 +46,6 @@ RUN \
     chmod 666 /etc/nginx/sites-enabled/site.conf && \
     nginx -t && \
     mkdir -p /run /var/lib/nginx /var/lib/php && \
-    chmod -R 777 /run /var/lib/nginx /var/lib/php /etc/php/7.0/fpm/php.ini
+    chmod -R 777 /run /var/lib/nginx /var/lib/php /etc/php/${PHP_VERSION}/fpm/php.ini
 
-COPY --from=ioncube_loader /ioncube/ioncube_loader_lin_7.0.so /usr/lib/php/20151012/
+COPY --from=ioncube_loader /ioncube/ioncube_loader_lin_${PHP_VERSION}.so /usr/lib/php/20151012/
