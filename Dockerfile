@@ -14,8 +14,34 @@ RUN \
     add-apt-repository -y -u ppa:ondrej/php && \
     apt-get update && \
     apt-get install -y imagemagick graphicsmagick && \
-    apt-get install -y php${PHP_VERSION}-bcmath php${PHP_VERSION}-bz2 php${PHP_VERSION}-cli php${PHP_VERSION}-common php${PHP_VERSION}-curl php${PHP_VERSION}-dba  php${PHP_VERSION}-fpm php${PHP_VERSION}-gd php${PHP_VERSION}-gmp php${PHP_VERSION}-imap php${PHP_VERSION}-intl php${PHP_VERSION}-ldap php${PHP_VERSION}-mbstring php${PHP_VERSION}-mcrypt php${PHP_VERSION}-mysql php${PHP_VERSION}-odbc php${PHP_VERSION}-pgsql php${PHP_VERSION}-recode php${PHP_VERSION}-snmp php${PHP_VERSION}-soap php${PHP_VERSION}-sqlite php${PHP_VERSION}-tidy php${PHP_VERSION}-xml php${PHP_VERSION}-xmlrpc php${PHP_VERSION}-xsl php${PHP_VERSION}-zip && \
-    apt-get install -y php-gnupg php-imagick php-mongodb php-streams php-fxsl && \
+    apt-get install -y php${PHP_VERSION}-bcmath \
+                        php${PHP_VERSION}-bz2 \
+                        php${PHP_VERSION}-cli \
+                        php${PHP_VERSION}-common \
+                        php${PHP_VERSION}-curl \
+                        php${PHP_VERSION}-dba \
+                        php${PHP_VERSION}-fpm \
+                        php${PHP_VERSION}-gd \
+                        php${PHP_VERSION}-gmp \
+                        php${PHP_VERSION}-imap \
+                        php${PHP_VERSION}-intl \
+                        php${PHP_VERSION}-ldap \
+                        php${PHP_VERSION}-mbstring \
+                        php${PHP_VERSION}-mcrypt \
+                        php${PHP_VERSION}-mysql \
+                        php${PHP_VERSION}-odbc \
+                        php${PHP_VERSION}-pgsql \
+                        php${PHP_VERSION}-recode \
+                        php${PHP_VERSION}-snmp \
+                        php${PHP_VERSION}-soap \
+                        php${PHP_VERSION}-sqlite \
+                        php${PHP_VERSION}-tidy \
+                        php${PHP_VERSION}-xml \
+                        php${PHP_VERSION}-xmlrpc \
+                        php${PHP_VERSION}-xsl \
+                        php${PHP_VERSION}-zip \
+                        php${PHP_VERSION}-imagick && \
+    apt-get install -y php-gnupg php-mongodb php-streams php-fxsl && \
     mkdir /tmp/composer/ && \
     cd /tmp/composer && \
     curl -sS https://getcomposer.org/installer | php && \
